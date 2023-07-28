@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wybór filmu do obejrzenia</title>
+    <style>
+        /* Dodaj stylizację strony tutaj */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #000;
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        .container {
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        select, button, input[type="text"] {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .favorite {
+            color: red;
+        }
+        .favorite-star {
+            cursor: pointer;
+        }
+        a:link {
+            text-decoration: none;
+            color: black; /* Zmiana koloru napisu dla nieodwiedzonych linków na czarny */
+            border-bottom: 2px solid transparent; /* Dodajemy niewidoczne podkreślenie dla linków */
+        }
+        a:hover {
+            border-bottom: 2px solid #007bff; /* Podkreślenie po najechaniu */
+        }
+        nav {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        nav a {
+            margin: 0 10px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+        }
+        /* Styl dla ciemnego trybu */
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        body.dark-mode .container {
+            background-color: #444;
+        }
+        body.dark-mode li {
+            border: 1px solid #777;
+            background-color: #555;
+        }
+        body.dark-mode li a {
+            color: #fff;
+        }
+        /* Przycisk "Wróć do góry" */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <script>
+        // Sprawdzenie, czy adblocker jest włączony
+        const adBlockerDetected = typeof window.ethereum === "undefined" && typeof window.web3 === "undefined";
+
+        // Jeśli adblocker jest włączony, wykonaj określone działanie
+        if (adBlockerDetected) {
+            // Tutaj możemy podjąć określone działania, na przykład wyświetlić ostrzeżenie lub zablokować dostęp do zawartości.
+            // W tym przypadku wyświetlamy alert jako przykład, ale pamiętaj, że taka praktyka może zniechęcać użytkowników.
+            alert("Wykryto włączony adblocker. Wyłącz go, aby kontynuować korzystanie z witryny.");
+        }
+    </script>
+   
+    <div class="container">
+        <nav>
+            <a href="onas.html">O nas</a>
+            <a href="kontakt.html">Kontakt</a>
+        </nav>
+        <h1>Wybierz film do obejrzenia</h1>
+        <form id="movieForm">
+            <label for="genre">Gatunek:</label>
+            <select id="genre">
+                <option value="all">Wszystkie</option>
+                <option value="action">Akcja</option>
+                <option value="comedy">Komedia</option>
+                <option value="drama">Dramat</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="horror">Horror</option>
+                <!-- Dodaj inne gatunki filmowe -->
+            </select>
+
+            <label for="year">Rok produkcji:</label>
+            <select id="year">
+                <option value="all">Wszystkie</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="1992">1992</option>
+                
+                <!-- Dodaj inne lata produkcji -->
+            </select>
+
+            <label for="title">Tytuł filmu:</label>
+            <input type="text" id="title" placeholder="Wprowadź tytuł filmu">
+
+            <button type="submit">Szukaj</button>
+        </form>
+        <div id="results">
+            <!-- Wyniki wyszukiwania filmów zostaną wyświetlone tutaj -->
+        </div>
+        <div>
+            <button id="toggleFavorites">Ulubione</button>
+            <button id="toggleCategory">Filmy</button>
+            <button id="toggleTheme">Zmień tryb</button>
+        </div>
+        <div class="footer">
+            Wszelkie prawa zastrzeżone &copy; 2023
+            <br>
+            Jeśli chciałbyś/chciałabyś wesprzeć naszą stronę, kliknij <a href="https://tipply.pl/u/kewniii">tutaj</a>.
+        </div>
+    </div>
+
+    <script>
+        const movies = [
+            {
+                title: "Venom ",
+                genre: "action",
+                year: 2018,
+                link: "veno1.html"
+            },
+            {
+                title: "Venom 2",
+                genre: "action",
+                year: 2021,
+                link: "veno.html"
+            },
+            {
+                title: "Spider-man bez drogi do domu",
+                genre: "sci-fi",
+                year: 2021,
+                link: "spiderbez.html"
+            },
+            {
+                title: "Dziewczyna w skrzyni",
+                genre: "drama",
+                year: 2016,
+                link: "dziws.html"
+            },
+            // Dodaj więcej przykładowych filmów
+            {
+                title: "Kevin sam w nowym Jorku",
+                genre: "comedy",
+                year: 1992,
+                link: "index.html"
+            },
+            {
+                title: "Naznaczony ostatni klucz",
+                genre: "horror",
+                year: 2018,
+                link: "naznaczony4.html"
+            },
+            {
+                title: "Nikt nie ujdzie z życiem",
+                genre: "horror",
+                year: 2021,
+                link: "niktzzycie.html"
+            },
+            {
+                title: "Egzorcysta Papieża",
+                genre: "horror",
+                year: 2023,
+                link: "egpa.html"
+            },
+            {
+                title: "Obecność 1",
+                genre: "horror",
+                year: 2013,
+                link: "obecno1.html"
+            }
+        ]
+        const series = []; // Pusta tablica dla serii - "Dodamy wkrótce"
+
+        const movieForm = document.getElementById('movieForm');
+        const resultsDiv = document.getElementById('results');
+        const toggleFavoritesButton = document.getElementById('toggleFavorites');
+        const toggleCategoryButton = document.getElementById('toggleCategory');
+        const toggleThemeButton = document.getElementById('toggleTheme');
+
+        let favoriteMovies = [];
+        let showingFavorites = false;
+        let showingMovies = true;
+        let darkMode = true;
+
+        movieForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            filterMedia();
+        });
+
+        toggleFavoritesButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            toggleFavorites();
+        });
+
+        toggleCategoryButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            toggleCategory();
+        });
+
+        toggleThemeButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            toggleTheme();
+        });
+
+        function filterMedia() {
+            const genreValue = document.getElementById('genre').value;
+            const yearValue = document.getElementById('year').value;
+            const titleValue = document.getElementById('title').value.toLowerCase();
+
+            let filteredMedia = showingMovies ? movies : series;
+
+            filteredMedia = filteredMedia.filter(media => {
+                if (genreValue !== 'all' && media.genre !== genreValue) {
+                    return false;
+                }
+                if (yearValue !== 'all' && media.year != yearValue) {
+                    return false;
+                }
+                if (titleValue && !media.title.toLowerCase().includes(titleValue)) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (showingFavorites) {
+                filteredMedia = filteredMedia.filter(media => isMediaFavorite(media));
+            }
+
+            displayMedia(filteredMedia);
+        }
+
+        function displayMedia(media) {
+            resultsDiv.innerHTML = '';
+
+            if (media.length === 0) {
+                resultsDiv.textContent = 'Brak wyników spełniających kryteria.';
+                return;
+            }
+
+            const ul = document.createElement('ul');
+            media.forEach(item => {
+                const li = document.createElement('li');
+                const titleLink = document.createElement('a');
+                titleLink.textContent = item.title;
+                titleLink.href = item.link;
+                li.appendChild(titleLink);
+
+                const favoriteStar = document.createElement('span');
+                favoriteStar.classList.add('favorite-star');
+                favoriteStar.innerHTML = '&#9734;';
+                if (isMediaFavorite(item)) {
+                    favoriteStar.classList.add('favorite');
+                }
+
+                favoriteStar.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    toggleFavoriteMedia(item);
+                    filterMedia();
+                });
+
+                li.appendChild(favoriteStar);
+                ul.appendChild(li);
+            });
+
+            resultsDiv.appendChild(ul);
+        }
+
+        function isMediaFavorite(media) {
+            return favoriteMovies.some(favMedia => favMedia.link === media.link);
+        }
+
+        function toggleFavoriteMedia(media) {
+            const index = favoriteMovies.findIndex(favMedia => favMedia.link === media.link);
+            if (index === -1) {
+                favoriteMovies.push(media);
+            } else {
+                favoriteMovies.splice(index, 1);
+            }
+            updateLocalStorage();
+        }
+
+        function toggleFavorites() {
+            showingFavorites = !showingFavorites;
+            toggleFavoritesButton.textContent = showingFavorites ? 'Wszystkie filmy' : 'Ulubione';
+            filterMedia();
+        }
+
+        function toggleCategory() {
+            showingMovies = !showingMovies;
+            toggleCategoryButton.textContent = showingMovies ? 'Filmy' : 'Seriale';
+            filterMedia();
+        }
+
+        function toggleTheme() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+        }
+
+        function updateLocalStorage() {
+            localStorage.setItem('favoriteMovies', JSON.stringify(favoriteMovies));
+        }
+
+        function loadFavoriteMovies() {
+            const storedFavoriteMovies = localStorage.getItem('favoriteMovies');
+            if (storedFavoriteMovies) {
+                favoriteMovies = JSON.parse(storedFavoriteMovies);
+            }
+        }
+
+        loadFavoriteMovies();
+        displayMedia(movies);
+    </script>
+    <div class="back-to-top" onclick="scrollToTop()">Wróć do góry</div>
+    <script>
+        // Skrypt dla przycisku "Wróć do góry"
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
